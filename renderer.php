@@ -19,7 +19,7 @@
  * behaviour.
  *
  * @package    qbehaviour
- * @subpackage interactive
+ * @subpackage interactivehintbutton
  * @copyright  2009 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -29,12 +29,12 @@ defined('MOODLE_INTERNAL') || die();
 
 
 /**
- * Interactive behaviour renderer.
+ * interactivehintbutton behaviour renderer.
  *
  * @copyright  2009 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qbehaviour_interactive_renderer extends qbehaviour_renderer {
+class qbehaviour_interactivehintbutton_renderer extends qbehaviour_renderer {
     public function controls(question_attempt $qa, question_display_options $options) {
         
         //echo "RENDERER CONTROLS";

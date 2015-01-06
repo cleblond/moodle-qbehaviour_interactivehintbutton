@@ -1,0 +1,5 @@
+Moodle 2.7+ Question Behaviour with Multiple Tries and Hint Button.
+
+Usage:
+1) Add your hints to the Multiple tries section during question edit
+2) The first hint is displayed for free but all other hits cost the student what ever you specified in the multiple triees section.

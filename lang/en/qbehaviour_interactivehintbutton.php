@@ -19,7 +19,7 @@
  *
  * @package    qbehaviour
  * @subpackage interactivehintbutton
- * @copyright  2009 The Open University
+ * @copyright  2015 onward Carl LeBlond
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

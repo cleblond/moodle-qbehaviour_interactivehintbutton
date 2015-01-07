@@ -18,20 +18,13 @@
  * Question behaviour type for interactivehintbutton behaviour.
  *
  * @package    qbehaviour_interactivehintbutton
- * @copyright  2012 The Open University
+ * @copyright  2015 onward Carl LeBlond
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
 defined('MOODLE_INTERNAL') || die();
 
-
-/**
- * Question behaviour type information for interactivehintbutton behaviour.
- *
- * @copyright  2012 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class qbehaviour_interactivehintbutton_type extends question_behaviour_type {
     public function is_archetypal() {
         return true;

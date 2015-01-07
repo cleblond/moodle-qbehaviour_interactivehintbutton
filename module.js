@@ -2,7 +2,7 @@
 M.qbehaviour_interactivehintbutton = {};
 
 
-M.qbehaviour_interactivehintbutton.expand_div = function (Y){
+M.qbehaviour_interactivehintbutton.expand_div = function (Y, slot){
     var handleSuccess = function(o) {
 
     };
@@ -14,27 +14,21 @@ M.qbehaviour_interactivehintbutton.expand_div = function (Y){
         failure:handleFailure
     };
     
+    var newqdiv = Y.one('#q'+slot).one('.content').one('.outcome');
 
-    //var feedbackNode = Y.one('.outcome');
-        //feedbackNode.set('class', 'outcome accesshide');
-        Y.one('.outcome').addClass('accesshide');
+    Y.on('domready', function () {
+        newqdiv.addClass('accesshide');
+        //Y.log('Dom Ready');
+    });
 
-
-    var refreshBut = Y.one("#hintbutton");
-    refreshBut.on("click", function () {
-        console.log('here');
-	//node = Y.one('#hinteo');
-//	Y.one('#hinteo').setStyle("display", "block");
-//	 Y.one('#hinteo').show();
-        var feedBackDiv = Y.one('.outcome');
-        if(feedBackDiv.hasClass('accesshide')) {
-		Y.one('.outcome').removeClass('accesshide');
+    var refreshBut = Y.one("#hintbutton"+slot);
+    refreshBut.on("click", function () {	
+        if(newqdiv.hasClass('accesshide')) {
+		newqdiv.removeClass('accesshide');
 
         } else {
-		Y.one('.outcome').addClass('accesshide');
+		newqdiv.addClass('accesshide');
         }
-        //Y.one('.outcome').addClass('accesshide');
-//	Y.one('#hintbutton').setStyle("display", "none");	
     });
 
 };

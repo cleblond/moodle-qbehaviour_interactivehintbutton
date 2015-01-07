@@ -20,25 +20,13 @@
  *
  * @package    qbehaviour
  * @subpackage interactivehintbutton
- * @copyright  2009 The Open University
+ * @copyright  2015 onward Carl LeBlond
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
 defined('MOODLE_INTERNAL') || die();
 
-
-/**
- * Question behaviour for the interactivehintbutton model.
- *
- * Each question has a submit button next to it which the student can use to
- * submit it. Once the qustion is submitted, it is not possible for the
- * student to change their answer any more, but the student gets full feedback
- * straight away.
- *
- * @copyright  2009 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class qbehaviour_interactivehintbutton extends question_behaviour_with_multiple_tries {
     /**
      * Special value used for {@link question_display_options::$readonly when
@@ -69,17 +57,9 @@ class qbehaviour_interactivehintbutton extends question_behaviour_with_multiple_
     }
 
     public function adjust_display_options(question_display_options $options) {
-        //echo "adjust_display_options";
 
-
-        //print_object($options);
-
-
-        // We only need different behaviour in try again states.
+        // We need different behaviour in try again states.
         $hint = $this->get_applicable_hint();
-        //print_object($hint);
-        //print_object($options);
-        //print_object($this->is_try_again_state());
         if (!$this->is_try_again_state()) {
             if(!is_null($hint)){ 
             $options->feedback = 1;
@@ -94,19 +74,14 @@ class qbehaviour_interactivehintbutton extends question_behaviour_with_multiple_
         }
 
         // Let the hint adjust the options.
-
-        //print_object($hint);
         if (!is_null($hint)) {
             $hint->adjust_display_options($options);
         }
-            //$hint->adjust_display_options($options);
-
 
         // Now call the base class method, but protect some fields from being overwritten.
         $save = clone($options);
         parent::adjust_display_options($options);
         $options->feedback = $save->feedback;
-        //print_object($options->feedback);
         $options->numpartscorrect = $save->numpartscorrect;
 
         // In a try-again state, everything except the try again button
@@ -117,13 +92,8 @@ class qbehaviour_interactivehintbutton extends question_behaviour_with_multiple_
     }
 
     public function get_applicable_hint() {
-        if (!$this->is_try_again_state()) {
-            //return null;
-        }
-        //echo "get_applicable_hint";
         return $this->question->get_hint(count($this->question->hints) -
                 $this->qa->get_last_behaviour_var('_triesleft')+1, $this->qa);
-        //return '';
     }
 
     public function get_expected_data() {
@@ -141,7 +111,6 @@ class qbehaviour_interactivehintbutton extends question_behaviour_with_multiple_
 
     public function get_expected_qt_data() {
         $hint = $this->get_applicable_hint();
-        //print_object($hint);
         if (!empty($hint->clearwrong)) {
             return $this->question->get_expected_data();
         }
@@ -157,8 +126,14 @@ class qbehaviour_interactivehintbutton extends question_behaviour_with_multiple_
         if ($this->is_try_again_state()) {
             return get_string('notcomplete', 'qbehaviour_interactivehintbutton');
         } else {
-            return get_string('triesremaining', 'qbehaviour_interactivehintbutton',
+
+            if ($this->qa->get_last_behaviour_var('_triesleft') == 1) {
+                return get_string('triesremaining', 'qbehaviour_interactivehintbutton',
                     $this->qa->get_last_behaviour_var('_triesleft'));
+            } else {
+            return get_string('triesremaining', 'qbehaviour_interactivehintbutton',
+                    $this->qa->get_last_behaviour_var('_triesleft')-1);
+            }
         }
     }
 

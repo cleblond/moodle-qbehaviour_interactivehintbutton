@@ -20,20 +20,13 @@
  *
  * @package    qbehaviour
  * @subpackage interactivehintbutton
- * @copyright  2009 The Open University
+ * @copyright  2015 onward Carl LeBlond
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
 defined('MOODLE_INTERNAL') || die();
 
-
-/**
- * interactivehintbutton behaviour renderer.
- *
- * @copyright  2009 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class qbehaviour_interactivehintbutton_renderer extends qbehaviour_renderer {
     public function controls(question_attempt $qa, question_display_options $options) {
         $hint = $qa->get_applicable_hint();
@@ -42,8 +35,8 @@ class qbehaviour_interactivehintbutton_renderer extends qbehaviour_renderer {
         if (!$qa->get_state()->is_active() || !$options->readonly) {
                 $attributes = array(
 		    'type' => 'button',
-		    'id' => 'hintbutton',
-		    'name' => 'hintbutton',
+		    'id' => 'hintbutton'.$qa->get_slot(),
+		    'name' => 'hintbutton'.$qa->get_slot(),
 		    'value' => 'Hint',
 		    'class' => 'hintbutton',
 		);
@@ -58,43 +51,35 @@ class qbehaviour_interactivehintbutton_renderer extends qbehaviour_renderer {
     }
 
     public function feedback(question_attempt $qa, question_display_options $options) {
-        //$options->feedback = 1;
-        //echo "RENDERER FEEDBACK";
-        //print_object($options);
-
-        if (!$qa->get_state()->is_active() || !$options->readonly) {
-		$jsmodule = array(
-	            'name'     => 'qbehaviour_interactivehintbutton',
-	            'fullpath' => new moodle_url('/question/behaviour/interactivehintbutton/module.js'),
-	            'requires' => array('transition'),
-	            'strings' => array()
-	        );
-        	$this->page->requires->js_init_call('M.qbehaviour_interactivehintbutton.expand_div',array(),true,$jsmodule);
-            return '';
-        }
-
-        
-
-
-        $attributes = array(
-            'type' => 'submit',
-            'id' => $qa->get_behaviour_field_name('tryagain'),
-            'name' => $qa->get_behaviour_field_name('tryagain'),
-            'value' => get_string('tryagain', 'qbehaviour_interactivehintbutton'),
-            'class' => 'submit btn',
-        );
-        if ($options->readonly !== qbehaviour_interactivehintbutton::READONLY_EXCEPT_TRY_AGAIN) {
-            $attributes['disabled'] = 'disabled';
-        }
-        //print_object($attributes);
-        $output = html_writer::empty_tag('input', $attributes);
-        if (empty($attributes['disabled'])) {
-            $this->page->requires->js_init_call('M.core_question_engine.init_submit_button',
-                    array($attributes['id'], $qa->get_slot()));
-        }
-        //print_object($output);
-      
-        return $output;
-
+        $hint = $qa->get_applicable_hint();
+        if($hint != null){
+		if (!$qa->get_state()->is_active() || !$options->readonly) {
+			$jsmodule = array(
+			    'name'     => 'qbehaviour_interactivehintbutton',
+			    'fullpath' => new moodle_url('/question/behaviour/interactivehintbutton/module.js'),
+			    'requires' => array('transition'),
+			    'strings' => array()
+			);
+			$this->page->requires->js_init_call('M.qbehaviour_interactivehintbutton.expand_div', array($qa->get_slot()), true, $jsmodule);
+		    return '';
+		}
+		$attributes = array(
+		    'type' => 'submit',
+		    'id' => $qa->get_behaviour_field_name('tryagain'),
+		    'name' => $qa->get_behaviour_field_name('tryagain'),
+		    'value' => get_string('tryagain', 'qbehaviour_interactivehintbutton'),
+		    'class' => 'submit btn',
+		);
+		if ($options->readonly !== qbehaviour_interactivehintbutton::READONLY_EXCEPT_TRY_AGAIN) {
+		    $attributes['disabled'] = 'disabled';
+		}
+		$output = html_writer::empty_tag('input', $attributes);
+		if (empty($attributes['disabled'])) {
+		    $this->page->requires->js_init_call('M.core_question_engine.init_submit_button',
+		            array($attributes['id'], $qa->get_slot()));
+		}
+	      
+		return $output;
+     	}
     }
 }

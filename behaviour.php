@@ -81,11 +81,15 @@ class qbehaviour_interactivehintbutton extends question_behaviour_with_multiple_
         //print_object($options);
         //print_object($this->is_try_again_state());
         if (!$this->is_try_again_state()) {
+            if(!is_null($hint)){ 
             $options->feedback = 1;
             $options->correctness = 0;
             $options->rightanswer = 0;
             $hint->adjust_display_options($options);
             //parent::adjust_display_options($options);
+            } else {
+            parent::adjust_display_options($options);
+            }
             return;
         }
 

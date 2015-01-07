@@ -36,8 +36,9 @@ defined('MOODLE_INTERNAL') || die();
  */
 class qbehaviour_interactivehintbutton_renderer extends qbehaviour_renderer {
     public function controls(question_attempt $qa, question_display_options $options) {
-        
-        //echo "RENDERER CONTROLS";
+        $hint = $qa->get_applicable_hint();
+        //print_object($qa->get_applicable_hint());
+        $output = '';
         if (!$qa->get_state()->is_active() || !$options->readonly) {
                 $attributes = array(
 		    'type' => 'button',
@@ -47,9 +48,9 @@ class qbehaviour_interactivehintbutton_renderer extends qbehaviour_renderer {
 		    'class' => 'hintbutton',
 		);
 
-			//if($hint != null){
+			if($hint != null){
 				$output = html_writer::empty_tag('input', $attributes);
-			//}
+			}
         
 	return $this->submit_button($qa, $options).$output;
         }

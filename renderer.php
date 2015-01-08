@@ -30,56 +30,65 @@ defined('MOODLE_INTERNAL') || die();
 class qbehaviour_interactivehintbutton_renderer extends qbehaviour_renderer {
     public function controls(question_attempt $qa, question_display_options $options) {
         $hint = $qa->get_applicable_hint();
-        //print_object($qa->get_applicable_hint());
         $output = '';
-        if (!$qa->get_state()->is_active() || !$options->readonly) {
-                $attributes = array(
-		    'type' => 'button',
-		    'id' => 'hintbutton'.$qa->get_slot(),
-		    'name' => 'hintbutton'.$qa->get_slot(),
-		    'value' => 'Hint',
-		    'class' => 'hintbutton',
-		);
 
-			if($hint != null){
-				$output = html_writer::empty_tag('input', $attributes);
-			}
-        
-	return $this->submit_button($qa, $options).$output;
-        }
+	if(!$qa->get_state()->is_active()){
         return $this->submit_button($qa, $options);
+        }
+        
+        if (!$options->readonly) {
+                $attributes = array(
+                    'type' => 'button',
+                    'id' => 'hintbutton'.$qa->get_slot(),
+                    'name' => 'hintbutton'.$qa->get_slot(),
+                    'value' => 'Hint',
+                    'class' => 'hintbutton',
+                );
+
+            if ($hint != null) {
+                $output = html_writer::empty_tag('input', $attributes);
+            }
+            return $this->submit_button($qa, $options).$output;
+        }
+
+
+
+       
     }
 
     public function feedback(question_attempt $qa, question_display_options $options) {
         $hint = $qa->get_applicable_hint();
-        if($hint != null){
-		if (!$qa->get_state()->is_active() || !$options->readonly) {
-			$jsmodule = array(
-			    'name'     => 'qbehaviour_interactivehintbutton',
-			    'fullpath' => new moodle_url('/question/behaviour/interactivehintbutton/module.js'),
-			    'requires' => array('transition'),
-			    'strings' => array()
-			);
-			$this->page->requires->js_init_call('M.qbehaviour_interactivehintbutton.expand_div', array($qa->get_slot()), true, $jsmodule);
-		    return '';
-		}
-		$attributes = array(
-		    'type' => 'submit',
-		    'id' => $qa->get_behaviour_field_name('tryagain'),
-		    'name' => $qa->get_behaviour_field_name('tryagain'),
-		    'value' => get_string('tryagain', 'qbehaviour_interactivehintbutton'),
-		    'class' => 'submit btn',
-		);
-		if ($options->readonly !== qbehaviour_interactivehintbutton::READONLY_EXCEPT_TRY_AGAIN) {
-		    $attributes['disabled'] = 'disabled';
-		}
-		$output = html_writer::empty_tag('input', $attributes);
-		if (empty($attributes['disabled'])) {
-		    $this->page->requires->js_init_call('M.core_question_engine.init_submit_button',
-		            array($attributes['id'], $qa->get_slot()));
-		}
-	      
-		return $output;
-     	}
+        if ($hint != null) {
+            if (!$qa->get_state()->is_active() || !$options->readonly) {
+                $jsmodule = array(
+                            'name'     => 'qbehaviour_interactivehintbutton',
+                            'fullpath' => new moodle_url('/question/behaviour/interactivehintbutton/module.js'),
+                            'requires' => array('transition'),
+                            'strings' => array()
+                );
+                if($qa->get_state()->is_active()){
+                $this->page->requires->js_init_call('M.qbehaviour_interactivehintbutton.expand_div',
+                    array($qa->get_slot()), true, $jsmodule);
+                }
+                return '';
+            }
+                $attributes = array(
+                    'type' => 'submit',
+                    'id' => $qa->get_behaviour_field_name('tryagain'),
+                    'name' => $qa->get_behaviour_field_name('tryagain'),
+                    'value' => get_string('tryagain', 'qbehaviour_interactivehintbutton'),
+                    'class' => 'submit btn',
+                );
+            if ($options->readonly !== qbehaviour_interactivehintbutton::READONLY_EXCEPT_TRY_AGAIN) {
+                $attributes['disabled'] = 'disabled';
+            }
+                $output = html_writer::empty_tag('input', $attributes);
+            if (empty($attributes['disabled'])) {
+                    $this->page->requires->js_init_call('M.core_question_engine.init_submit_button',
+                            array($attributes['id'], $qa->get_slot()));
+            }
+                return $output;
+        }
+        return;
     }
 }

@@ -50,50 +50,53 @@ class qbehaviour_interactivehintbutton extends question_behaviour_with_multiple_
      * @return bool are we are currently in the try_again state.
      */
     protected function is_try_again_state() {
-        //echo "is_try_again_state";
         $laststep = $this->qa->get_last_step();
         return $this->qa->get_state()->is_active() && $laststep->has_behaviour_var('submit') &&
                 $laststep->has_behaviour_var('_triesleft');
     }
 
     public function adjust_display_options(question_display_options $options) {
-
         // We need different behaviour in try again states.
         $hint = $this->get_applicable_hint();
-        if (!$this->is_try_again_state()) {
-            if(!is_null($hint)){ 
-            $options->feedback = 1;
-            $options->correctness = 0;
-            $options->rightanswer = 0;
-            $hint->adjust_display_options($options);
-            //parent::adjust_display_options($options);
+        //all states except last state
+        if (!$this->is_try_again_state()  && $this->qa->get_state()->is_active()) {
+            if (!is_null($hint)) {
+                $options->feedback = 1;
+                $options->correctness = 0;
+                $options->rightanswer = 0;
+                $hint->adjust_display_options($options);
             } else {
-            parent::adjust_display_options($options);
+                parent::adjust_display_options($options);
             }
+
             return;
         }
-
-        // Let the hint adjust the options.
-        if (!is_null($hint)) {
-            $hint->adjust_display_options($options);
-        }
-
         // Now call the base class method, but protect some fields from being overwritten.
-        $save = clone($options);
-        parent::adjust_display_options($options);
-        $options->feedback = $save->feedback;
-        $options->numpartscorrect = $save->numpartscorrect;
-
-        // In a try-again state, everything except the try again button
-        // Should be read-only. This is a mild hack to achieve this.
-        if (!$options->readonly) {
-            $options->readonly = self::READONLY_EXCEPT_TRY_AGAIN;
+        if ($this->is_try_again_state()) {
+		$save = clone($options);
+		parent::adjust_display_options($options);
+		$options->feedback = $save->feedback;
+		$options->numpartscorrect = $save->numpartscorrect;
+		
+		// In a try-again state, everything except the try again button
+		// Should be read-only. This is a mild hack to achieve this.
+		if (!$options->readonly) {
+		    $options->readonly = self::READONLY_EXCEPT_TRY_AGAIN;
+		}
+                return;
         }
+        parent::adjust_display_options($options);
+
     }
 
     public function get_applicable_hint() {
+        if ($this->is_try_again_state()) {
         return $this->question->get_hint(count($this->question->hints) -
-                $this->qa->get_last_behaviour_var('_triesleft')+1, $this->qa);
+                $this->qa->get_last_behaviour_var('_triesleft')-1, $this->qa);
+        } else {
+        return $this->question->get_hint(count($this->question->hints) -
+                $this->qa->get_last_behaviour_var('_triesleft'), $this->qa);
+        }
     }
 
     public function get_expected_data() {
@@ -127,19 +130,19 @@ class qbehaviour_interactivehintbutton extends question_behaviour_with_multiple_
             return get_string('notcomplete', 'qbehaviour_interactivehintbutton');
         } else {
 
-            if ($this->qa->get_last_behaviour_var('_triesleft') == 1) {
+            if ($this->qa->get_last_behaviour_var('_triesleft') == 0) {
+                return get_string('triesremaining', 'qbehaviour_interactivehintbutton',
+                    $this->qa->get_last_behaviour_var('_triesleft')+1);
+            } else {
                 return get_string('triesremaining', 'qbehaviour_interactivehintbutton',
                     $this->qa->get_last_behaviour_var('_triesleft'));
-            } else {
-            return get_string('triesremaining', 'qbehaviour_interactivehintbutton',
-                    $this->qa->get_last_behaviour_var('_triesleft')-1);
             }
         }
     }
 
     public function init_first_step(question_attempt_step $step, $variant) {
         parent::init_first_step($step, $variant);
-        $step->set_behaviour_var('_triesleft', count($this->question->hints) + 1);
+        $step->set_behaviour_var('_triesleft', count($this->question->hints));
     }
 
     public function process_action(question_attempt_pending_step $pendingstep) {
@@ -186,7 +189,6 @@ class qbehaviour_interactivehintbutton extends question_behaviour_with_multiple_
         if ($this->qa->get_state()->is_finished()) {
             return question_attempt::DISCARD;
         }
-
         if (!$this->is_complete_response($pendingstep)) {
             $pendingstep->set_state(question_state::$invalid);
 
@@ -194,7 +196,7 @@ class qbehaviour_interactivehintbutton extends question_behaviour_with_multiple_
             $triesleft = $this->qa->get_last_behaviour_var('_triesleft');
             $response = $pendingstep->get_qt_data();
             list($fraction, $state) = $this->question->grade_response($response);
-            if ($state == question_state::$gradedright || $triesleft == 1) {
+            if ($state == question_state::$gradedright || $triesleft == 1 || $triesleft == 0) {
                 $pendingstep->set_state($state);
                 $pendingstep->set_fraction($this->adjust_fraction($fraction, $pendingstep));
 

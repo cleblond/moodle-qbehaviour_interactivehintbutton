@@ -1,5 +1,10 @@
 Moodle 2.7+ Question Behaviour with Multiple Tries and Hint Button.
 by Carl LeBlond
-Usage:
-Simply add your hints and penalties to the multiple tries section while you are editing the question.
 
+Usage:
+Similar to Interactive with Multiple tires, except it shows the hintshidden while attempting.
+Students are not penalized for looking at hint, but are penalized for
+each additional try.  Maybe next version will do this.
+Simply add your hints and penalties to the multiple tries section while 
+you are editing the question.  Choose Interactive with Hint Button as your 
+question behaviour while previewing question or setting up your quizzes.
